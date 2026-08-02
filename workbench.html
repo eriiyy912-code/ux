@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>互动案例库 · 我的工作台</title>
+    <style>
+      :root { --blue:#6d61e8; --blue-deep:#5d51d6; --pink:#e2728c; --accent-gradient:linear-gradient(110deg,#e2728c 0%,#7568ff 100%); --ink:#202039; --muted:#77748f; --line:#e9e7f0; --surface:#fff; --bg:#faf9fd; --disabled:#f1f0f5; }
+      * { box-sizing:border-box; }
+      body { min-width:320px; margin:0; color:var(--ink); background:radial-gradient(circle at 78% -12%,#f0eeff 0,rgba(240,238,255,0) 32%),radial-gradient(circle at 36% -18%,#fff0f3 0,rgba(255,240,243,0) 28%),var(--bg); font-family:Inter,"PingFang SC","Microsoft YaHei",Arial,sans-serif; }
+      button,a { font:inherit; } a { color:inherit; text-decoration:none; }
+      .shell { display:flex; min-height:100vh; }
+      .sidebar { position:sticky; top:0; display:flex; flex:0 0 82px; flex-direction:column; align-items:center; height:100vh; padding:24px 16px; border-right:1px solid var(--line); background:#fff; }
+      .side-control { position:relative; display:grid; place-items:center; width:48px; height:48px; border:0; border-radius:13px; color:#526079; background:transparent; font-size:25px; cursor:pointer; transition:.18s ease; }.side-control:hover { color:var(--blue); background:#f1f5ff; }.side-control::after { position:absolute; left:58px; z-index:30; padding:8px 11px; border-radius:8px; color:#fff; background:#202a40; box-shadow:0 7px 18px rgba(22,32,58,.16); content:attr(data-label); font-size:13px; font-weight:650; white-space:nowrap; opacity:0; pointer-events:none; transform:translateX(-5px); transition:.15s ease; }.side-control:hover::after { opacity:1; transform:translateX(0); }.side-control.active { color:#fff; background:var(--blue); box-shadow:0 8px 18px rgba(23,100,255,.2); }.side-control:disabled { color:#aab4c6; background:#f2f4f8; cursor:not-allowed; box-shadow:none; }.side-control:disabled:hover::after { opacity:1; transform:translateX(0); }
+      .side-create { margin-bottom:36px; color:#fff; background:var(--blue); box-shadow:0 8px 18px rgba(23,100,255,.2); font-size:30px; }.side-create:hover { color:#fff; background:#0f58ed; }.side-nav { display:grid; gap:14px; }.side-role { display:grid; gap:8px; margin-top:auto; padding-top:16px; border-top:1px solid #edf0f5; }
+      main { width:min(100%,1430px); flex:1; margin:0 auto; padding:26px 38px 40px; }
+      .topbar { display:flex; align-items:center; gap:20px; min-height:44px; }
+      .title-wrap { margin-right:auto; }.title-wrap h1 { margin:0; font-size:30px; letter-spacing:-1.2px; }
+      .workspace { margin-top:24px; }.card { border:1px solid var(--line); border-radius:12px; background:var(--surface); box-shadow:0 7px 22px rgba(32,46,79,.035); }
+      .project-card { padding:23px 26px 20px; }.section-title { margin:0; font-size:18px; letter-spacing:-.35px; }.project-table { width:100%; margin-top:17px; border-collapse:separate; border-spacing:0; overflow:hidden; border:1px solid #edf0f6; border-radius:10px; }.project-table th { height:46px; padding:0 14px; color:#58657d; background:#fafbfe; font-size:13px; font-weight:700; text-align:left; }.project-table td { height:64px; padding:0 14px; border-top:1px solid #edf0f6; color:#5c6880; font-size:13px; }.project-table th:first-child,.project-table td:first-child { padding-left:18px; }.project-name { color:#212c43; font-size:15px; font-weight:750; white-space:nowrap; }.status { display:inline-block; padding:4px 9px; border-radius:6px; color:#2eaa72; background:#eaf9f1; font-size:12px; font-weight:700; white-space:nowrap; }.actions { display:flex; justify-content:flex-end; gap:9px; }.view-button,.edit-button { display:inline-flex; align-items:center; justify-content:center; min-width:86px; min-height:34px; border-radius:7px; font-size:13px; font-weight:700; white-space:nowrap; }.view-button { border:1px solid #aeb9ca; color:#4b5871; background:#fff; }.view-button:hover { border-color:var(--blue); color:var(--blue); }.edit-button { border:1px solid #e1e6ef; color:#a6afc0; background:#f8f9fc; cursor:not-allowed; }.edit-button:not(:disabled) { border-color:#a8c0ff; color:var(--blue); background:#fff; cursor:pointer; }
+      .activity-card { margin-top:14px; padding:21px 26px; }.activity-list { margin-top:11px; }.activity { display:flex; align-items:center; gap:10px; min-height:48px; border-bottom:1px solid #edf0f6; }.activity:last-child { border-bottom:0; }.activity-dot { flex:0 0 7px; width:7px; height:7px; border-radius:50%; background:linear-gradient(135deg,#e2728c,#7568ff); box-shadow:0 0 0 4px #f5f1ff; }.activity-copy { display:flex; align-items:baseline; gap:9px; color:#343047; font-size:13px; font-weight:700; }.activity-copy small { color:#8a859a; font-size:12px; font-weight:500; }.more { margin-left:auto; border:0; padding:0; color:var(--blue); background:transparent; font-size:13px; font-weight:700; cursor:pointer; }
+      .module-library { margin-top:14px; padding:21px 26px 23px; }.module-library-head { display:flex; align-items:center; justify-content:space-between; gap:18px; }.canvas-link { display:inline-flex; align-items:center; gap:7px; border:0; padding:0; color:var(--blue); background:transparent; font-size:13px; font-weight:750; white-space:nowrap; cursor:pointer; }.canvas-link:hover { text-decoration:underline; text-underline-offset:4px; }.module-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:14px; }.module-item { display:flex; align-items:center; gap:10px; min-height:66px; padding:11px 12px; border:1px solid #e8edf5; border-radius:10px; background:#fbfcff; }.module-icon { display:grid; place-items:center; flex:0 0 30px; width:30px; height:30px; border-radius:8px; color:var(--blue); background:#edf3ff; font-size:16px; }.module-item:nth-child(2) .module-icon { color:#498b68; background:#edf8f1; }.module-item:nth-child(3) .module-icon { color:#9b6e32; background:#fff5e9; }.module-item:nth-child(4) .module-icon { color:#7d62bd; background:#f3efff; }.module-item:nth-child(5) .module-icon { color:#4a7fa7; background:#edf7ff; }.module-item:nth-child(6) .module-icon { color:#4e8d87; background:#eefaf8; }.module-item:nth-child(7) .module-icon { color:#7b8293; background:#f1f3f7; }.module-copy { display:grid; gap:3px; min-width:0; }.module-copy b { overflow:hidden; color:#2b364d; font-size:13px; text-overflow:ellipsis; white-space:nowrap; }.module-copy span { color:#7f8ba0; font-size:12px; }
+      .canvas-stage { position:relative; margin-top:40px; }.canvas-stage-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }.canvas-stage-title { display:flex; align-items:center; gap:12px; min-width:0; }.canvas-stage-title h2 { overflow:hidden; margin:0; color:#1b2740; font-size:21px; text-overflow:ellipsis; white-space:nowrap; }.canvas-back { min-height:36px; padding:0 12px; border:1px solid #d5ddea; border-radius:8px; color:#53617b; background:#fff; font-size:13px; font-weight:700; cursor:pointer; }.canvas-back:hover { border-color:var(--blue); color:var(--blue); }.canvas-shell { overflow:hidden; height:calc(100vh - 182px); min-height:620px; border:1px solid #dce3ef; border-radius:12px; background:#fff; box-shadow:0 9px 24px rgba(32,46,79,.07); }.canvas-shell iframe { display:block; width:100%; height:100%; border:0; background:#fff; }
+      .canvas-editor-actions { display:flex; align-items:center; gap:8px; }.page-tool { min-height:36px; padding:0 12px; border:1px solid #d5ddea; border-radius:8px; color:#3f4d66; background:#fff; font-size:13px; font-weight:700; cursor:pointer; }.page-tool:hover { border-color:var(--blue); color:var(--blue); }.page-tool.danger:hover { border-color:#e37b7b; color:#d84747; }.editor-panel { position:absolute; top:54px; right:18px; z-index:12; width:min(380px,calc(100% - 36px)); overflow:hidden; border:1px solid #dbe3ef; border-radius:12px; background:#fff; box-shadow:0 18px 42px rgba(31,46,78,.2); }.editor-panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:15px; padding:20px 20px 15px; border-bottom:1px solid #edf0f5; }.editor-panel-head h3 { margin:0; color:#202b41; font-size:17px; }.editor-panel-head p { margin:7px 0 0; color:#7a879c; font-size:12px; line-height:1.5; }.editor-close { display:grid; place-items:center; flex:0 0 28px; width:28px; height:28px; border:0; border-radius:7px; color:#708098; background:#f4f6fa; cursor:pointer; font-size:20px; }.editor-page-list { display:grid; max-height:360px; gap:7px; overflow:auto; padding:14px 20px; }.editor-page { display:flex; align-items:center; gap:11px; min-height:50px; padding:9px 10px; border:1px solid #edf0f5; border-radius:8px; cursor:pointer; }.editor-page:hover { border-color:#b9caff; background:#f8faff; }.editor-page input { width:16px; height:16px; accent-color:var(--blue); }.editor-page-copy { display:grid; gap:3px; }.editor-page-copy b { color:#334058; font-size:13px; }.editor-page-copy small { color:#8a96aa; font-size:11px; }.editor-empty { margin:0; padding:34px 8px; color:#8793a8; font-size:13px; text-align:center; }.editor-panel-foot { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 20px 18px; border-top:1px solid #edf0f5; }.editor-count { color:#748198; font-size:12px; }.editor-apply { min-height:36px; padding:0 14px; border:0; border-radius:8px; color:#fff; background:var(--blue); font-size:13px; font-weight:750; cursor:pointer; }
+      .editor-group { overflow:hidden; border:1px solid #edf0f5; border-radius:8px; }.editor-group-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 11px; color:#344057; background:#fafbfe; font-size:13px; font-weight:750; }.editor-group-head small { color:#8995a9; font-size:11px; font-weight:500; }.editor-tab-list { display:grid; gap:5px; padding:7px; }.editor-tab-list .editor-page { min-height:42px; border-color:transparent; border-radius:6px; }.editor-tab-list .editor-page:hover { border-color:#d9e3ff; }.editor-tab-list .editor-page-copy { display:block; }.editor-tab-list .editor-page-copy b { font-size:12px; font-weight:650; }.editor-tab-list .editor-page-copy small { margin-left:7px; }
+      .sidebar { flex-basis:66px; padding:17px 10px 16px; border-right:1px solid #2c2d33; background:#1b1c20; }.side-control { width:42px; height:42px; border-radius:10px; color:#abb0bd; background:transparent; font-size:0; }.side-control:hover { color:#fff; background:#282a30; }.side-control::after { left:52px; padding:8px 12px; border-radius:8px; background:linear-gradient(110deg,#36313b,#596be9); box-shadow:0 8px 20px rgba(0,0,0,.24); font-size:12px; }.side-control.active { color:#fff; background:#303137; box-shadow:none; }.side-control.active::after { background:linear-gradient(110deg,#d96f88,#626bff); }.side-control.active::before { position:absolute; left:-10px; width:3px; height:24px; border-radius:0 4px 4px 0; background:linear-gradient(#ec7478,#6d68ff); content:""; }.side-control:disabled { color:#676c78; background:transparent; }.side-control:disabled:hover { color:#676c78; background:#24252b; }.side-create { margin-bottom:30px; color:#eef0f5; background:#25262c; font-size:29px; font-weight:300; line-height:1; box-shadow:none; }.side-create:hover { color:#fff; background:#303139; }.side-create:disabled { color:#666b76; background:#25262c; }.side-create.is-active { color:#fff; background:linear-gradient(145deg,#ec7889,#7667ff); box-shadow:0 6px 14px rgba(109,91,238,.34); }.side-create.is-active:hover { background:linear-gradient(145deg,#f18393,#6658ee); }.side-nav { gap:8px; }.side-role { gap:7px; padding-top:13px; border-top:1px solid #33343a; }
+      .side-glyph { position:relative; display:block; width:20px; height:20px; color:currentColor; }.project-glyph { background:linear-gradient(currentColor 0 0) 1px 1px/7px 7px no-repeat,linear-gradient(currentColor 0 0) 12px 1px/7px 7px no-repeat,linear-gradient(currentColor 0 0) 1px 12px/7px 7px no-repeat,linear-gradient(currentColor 0 0) 12px 12px/7px 7px no-repeat; border-radius:2px; }.activity-glyph { border-bottom:1.6px solid currentColor; }.activity-glyph::before { position:absolute; bottom:2px; left:2px; width:2px; height:7px; border-radius:2px; background:currentColor; box-shadow:5px -3px 0 currentColor,10px -7px 0 currentColor,15px -4px 0 currentColor; content:""; }.library-glyph { border:1.6px solid currentColor; border-radius:4px; }.library-glyph::before { position:absolute; top:5px; right:4px; left:4px; height:1.5px; background:currentColor; box-shadow:0 4px 0 currentColor,0 8px 0 currentColor; content:""; }.user-glyph::before { position:absolute; top:1px; left:7px; width:6px; height:6px; border-radius:50%; background:currentColor; content:""; }.user-glyph::after { position:absolute; bottom:1px; left:3px; width:14px; height:9px; border:1.6px solid currentColor; border-bottom:0; border-radius:10px 10px 0 0; content:""; }.admin-glyph { border:1.7px solid currentColor; border-radius:5px 5px 8px 8px; clip-path:polygon(50% 0,100% 18%,88% 72%,50% 100%,12% 72%,0 18%); }.admin-glyph::before { position:absolute; top:6px; left:8px; width:3px; height:5px; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; content:""; transform:rotate(45deg); }
+      .side-control { --glyph-surface:#1b1c20; }.side-control:hover { --glyph-surface:#282a30; }.side-control.active { --glyph-surface:#303137; }.side-glyph { width:21px; height:21px; }.list-glyph { background:linear-gradient(currentColor 0 0) 10px 2px/11px 2px no-repeat,linear-gradient(currentColor 0 0) 10px 10px/11px 2px no-repeat,linear-gradient(currentColor 0 0) 10px 18px/11px 2px no-repeat; }.list-glyph b { position:absolute; left:0; width:7px; height:7px; border:2px solid currentColor; border-radius:3px; }.list-glyph b:nth-child(1) { top:0; }.list-glyph b:nth-child(2) { top:8px; }.list-glyph b:nth-child(3) { top:16px; }.send-glyph { transform:rotate(-19deg); }.send-glyph::before { position:absolute; inset:1px 0 1px 1px; background:currentColor; clip-path:polygon(0 33%,100% 0,51% 100%,39% 65%); content:""; }.send-glyph::after { position:absolute; top:3px; left:3px; width:15px; height:14px; background:var(--glyph-surface); clip-path:polygon(1% 34%,100% 0,51% 100%,39% 65%); content:""; }.send-glyph b { position:absolute; z-index:1; top:10px; left:5px; width:9px; height:2px; background:currentColor; transform:rotate(20deg); }.layers-glyph b { position:absolute; left:3px; width:15px; height:10px; border:2px solid currentColor; border-radius:2px; transform:rotate(30deg) skewX(-30deg); }.layers-glyph b:nth-child(1) { top:0; }.layers-glyph b:nth-child(2) { top:6px; }.layers-glyph b:nth-child(3) { top:12px; }.user-glyph::before { top:0; left:7px; width:7px; height:7px; background:transparent; border:2px solid currentColor; }.user-glyph::after { bottom:0; left:2px; width:17px; height:10px; border:2px solid currentColor; border-bottom:0; border-radius:10px 10px 0 0; }.admin-glyph { border:0; border-radius:0; clip-path:none; }.admin-glyph::before { top:0; left:7px; width:7px; height:7px; border:2px solid currentColor; border-radius:50%; transform:none; }.admin-glyph::after { bottom:0; left:2px; width:12px; height:10px; border:2px solid currentColor; border-bottom:0; border-radius:10px 10px 0 0; }.admin-glyph b { position:absolute; right:0; bottom:1px; width:7px; height:7px; border:2px solid currentColor; border-radius:50%; }.admin-glyph b::after { position:absolute; top:5px; right:4px; width:7px; height:2px; background:currentColor; content:""; }.admin-glyph b::before { position:absolute; top:5px; right:0; width:2px; height:5px; background:currentColor; content:""; }
+      .side-role { width:42px; gap:0; padding:4px; border:0; border-radius:15px; background:#292a30; }.side-role .side-control { width:34px; height:32px; border-radius:11px; }.side-role .side-control::before { display:none; }.side-role .side-control.active { color:#fff; background:linear-gradient(145deg,#e2728c,#7568ff); box-shadow:0 4px 10px rgba(101,91,237,.34); }.side-role .side-control.active::after { background:linear-gradient(110deg,#d96f88,#626bff); }.side-role .side-control.active { --glyph-surface:transparent; }
+      .side-icon-img { display:block; width:20px; height:20px; object-fit:contain; filter:brightness(0) invert(.72); transition:filter .18s ease,transform .18s ease; }.side-icon-list { width:19px; height:19px; }.side-icon-activity { width:19px; height:19px; }.side-icon-library { width:21px; height:21px; }.side-icon-role { width:20px; height:20px; }.side-control:hover .side-icon-img,.side-control.active .side-icon-img { filter:brightness(0) invert(1); }
+      /* Figma exports retain their 42px component frame; keep it so the original icon geometry stays intact. */
+      .side-control .side-icon-img { width:42px; height:42px; }.side-control.is-active .side-icon-img { filter:brightness(0) invert(1); }.side-create { position:relative; }.side-create .side-icon-img,.side-role .side-icon-img { position:absolute; top:50%; left:50%; width:42px; height:42px; margin:0; transform:translate(-50%,-50%); }.side-role .side-control { position:relative; }
+      /* Workbench palette: inherit the sidebar's rose-to-violet accent without making content panels heavy. */
+      .card { border-color:#e8e5f0; box-shadow:0 10px 28px rgba(63,50,103,.055); }.project-table { border-color:#ebe8f2; }.project-table th { color:#625f78; background:#fbfaff; }.project-table td { border-top-color:#eeebf3; color:#67647c; }.project-name { color:#29263f; }.file-icon { color:var(--blue); background:#f0eeff; }.view-button { border-color:#cec9e6; color:#57526e; }.view-button:hover { border-color:#897ee1; color:var(--blue-deep); background:#faf9ff; }.edit-button { border-color:#e7e4ed; color:#aaa7b5; background:#f7f6fa; }.edit-button:not(:disabled) { border-color:transparent; color:#fff; background:var(--accent-gradient); box-shadow:0 5px 12px rgba(108,91,211,.19); }.edit-button:not(:disabled):hover { box-shadow:0 7px 16px rgba(108,91,211,.28); transform:translateY(-1px); }.activity { border-bottom-color:#eeebf3; }.activity-icon { color:var(--blue-deep); background:#f0eeff; }.activity-copy { color:#2b2841; }.activity-copy small { color:#817d95; }.more,.canvas-link { color:var(--blue-deep); }.module-item { border-color:#ece9f3; background:#fdfcff; }.module-item:hover { border-color:#d9d2f2; box-shadow:0 5px 14px rgba(87,69,145,.055); }.module-icon { color:var(--blue-deep); background:#f0eeff; }.module-item:nth-child(2) .module-icon { color:#9570bd; background:#f5efff; }.module-item:nth-child(3) .module-icon { color:#c36b83; background:#fff0f3; }.module-item:nth-child(4) .module-icon { color:#7664bc; background:#f3efff; }.module-item:nth-child(5) .module-icon { color:#8a78c6; background:#f5f2ff; }.module-item:nth-child(6) .module-icon { color:#bb7292; background:#fff2f5; }.module-item:nth-child(7) .module-icon { color:#77758d; background:#f2f1f6; }.module-copy b { color:#39354d; }.module-copy span { color:#89849b; }.canvas-back,.page-tool { border-color:#d8d2e8; color:#5c5773; }.canvas-back:hover,.page-tool:hover { border-color:#897ee1; color:var(--blue-deep); background:#fbfaff; }.canvas-shell { border-color:#e1ddec; box-shadow:0 10px 28px rgba(63,50,103,.075); }.editor-panel { border-color:#e0dced; box-shadow:0 18px 42px rgba(60,46,99,.19); }.editor-panel-head,.editor-panel-foot { border-color:#ece9f2; }.editor-close { color:#716b86; background:#f3f1f8; }.editor-page { border-color:#ece9f2; }.editor-page:hover,.editor-tab-list .editor-page:hover { border-color:#d7d0ed; background:#faf9ff; }.editor-page input { accent-color:var(--blue-deep); }.editor-apply { background:var(--accent-gradient); box-shadow:0 5px 12px rgba(108,91,211,.2); }.editor-group { border-color:#ebe8f2; }.editor-group-head { color:#514b69; background:#faf9fe; }
+      .module-source { position:fixed; right:-2px; bottom:-2px; width:1px; height:1px; border:0; opacity:0; pointer-events:none; }.toast { position:fixed; left:50%; bottom:30px; z-index:40; padding:12px 17px; border-radius:9px; color:#fff; background:#25324c; box-shadow:0 8px 22px rgba(20,30,50,.2); font-size:14px; transform:translate(-50%,20px); opacity:0; pointer-events:none; transition:.2s; }.toast.show { opacity:1; transform:translate(-50%,0); }
+      @media (max-width:920px) { .module-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+      @media (max-width:760px) { .sidebar { position:fixed; right:0; bottom:0; left:0; z-index:25; flex-direction:row; width:auto; height:72px; padding:10px 14px; border-top:1px solid var(--line); border-right:0; }.side-create { margin:0 8px 0 0; }.side-nav { display:flex; gap:7px; }.side-role { display:flex; gap:4px; margin:0 0 0 auto; padding:0 0 0 8px; border-top:0; border-left:1px solid #edf0f5; }.side-control::after { top:auto; bottom:57px; left:50%; transform:translate(-50%,5px); }.side-control:hover::after { transform:translate(-50%,0); } main { padding:28px 18px 102px; }.topbar { gap:13px; }.title-wrap h1 { font-size:30px; }.workspace { margin-top:29px; }.project-card,.activity-card,.module-library { padding:23px 18px; }.project-card { overflow:auto; }.project-table { min-width:700px; }.module-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.module-library-head { align-items:flex-start; flex-direction:column; gap:8px; }.canvas-stage { margin-top:28px; }.canvas-stage-head { align-items:flex-start; flex-direction:column; }.canvas-shell { height:calc(100vh - 180px); min-height:520px; }.canvas-stage-title h2 { font-size:18px; }.canvas-editor-actions { width:100%; }.page-tool { flex:1; }.editor-panel { top:104px; right:0; left:0; width:auto; }.editor-page-list { max-height:300px; } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar" aria-label="工作台导航">
+        <button id="new-project" class="side-control side-create" type="button" disabled data-label="新建项目（仅管理可用）" aria-label="新建项目"><img class="side-icon-img side-icon-create" src="./sidebar-icons/figma-create.svg" alt=""></button>
+        <nav class="side-nav" aria-label="页面目录">
+          <a class="side-control active" href="#projects" data-label="项目列表" aria-label="项目列表"><img class="side-icon-img side-icon-list" src="./sidebar-icons/figma-list.svg" alt=""></a>
+          <a class="side-control" href="#activity" data-label="项目动态" aria-label="项目动态"><img class="side-icon-img side-icon-activity" src="./sidebar-icons/figma-activity.svg" alt=""></a>
+          <a class="side-control" href="#module-library" data-label="交互模块库" aria-label="交互模块库"><img class="side-icon-img side-icon-library" src="./sidebar-icons/figma-library.svg" alt=""></a>
+        </nav>
+        <div class="side-role" aria-label="身份切换">
+          <button class="side-control" data-role="admin" data-label="管理：可新建、编辑、发布" type="button" aria-label="管理"><img class="side-icon-img side-icon-role" src="./sidebar-icons/figma-admin.svg" alt=""></button>
+          <button class="side-control active" data-role="visitor" data-label="游客：仅查看已发布项目" type="button" aria-label="游客"><img class="side-icon-img side-icon-role" src="./sidebar-icons/figma-visitor.svg" alt=""></button>
+        </div>
+      </aside>
+      <main id="workbench">
+        <header class="topbar">
+          <div class="title-wrap"><h1>我的工作台</h1></div>
+        </header>
+        <div id="dashboard" class="workspace">
+          <div>
+            <section id="projects" class="card project-card" aria-labelledby="projects-title">
+              <h2 id="projects-title" class="section-title">项目列表</h2>
+              <table class="project-table">
+                <thead><tr><th>项目名称</th><th>状态</th><th>发布时间</th><th>来源</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td><div class="project-name">披哥综艺互动</div></td><td><span class="status">已发布</span></td><td>2025-05-20 14:30</td><td>官方模板</td><td><div class="actions"><button class="view-button canvas-trigger" type="button" data-canvas="../project/ux-pgzy.html" data-canvas-title="披哥综艺互动">查看项目</button><button class="edit-button" type="button" disabled data-canvas="../project/ux-pgzy.html" data-canvas-title="编辑：披哥综艺互动" data-canvas-mode="edit">⌑ 编辑项目</button></div></td></tr>
+                </tbody>
+              </table>
+            </section>
+            <section id="activity" class="card activity-card" aria-labelledby="activity-title">
+              <h2 id="activity-title" class="section-title">项目动态</h2>
+              <div id="activity-list" class="activity-list" aria-live="polite"></div>
+            </section>
+            <section id="module-library" class="card module-library" aria-labelledby="module-library-title">
+              <div class="module-library-head">
+                <h2 id="module-library-title" class="section-title">交互模块库</h2>
+                <button class="canvas-link canvas-trigger" type="button" data-admin-required="true" data-canvas="../ux-board/ux-board.html" data-canvas-title="交互模板库大画布">打开模板库</button>
+              </div>
+              <div id="module-grid" class="module-grid" aria-label="模板库模块与页面数量" aria-live="polite"></div>
+            </section>
+          </div>
+        </div>
+        <section id="canvas-stage" class="canvas-stage" hidden aria-labelledby="canvas-title">
+          <div class="canvas-stage-head">
+            <div class="canvas-stage-title"><button id="back-dashboard" class="canvas-back" type="button">← 返回工作台</button><h2 id="canvas-title">交互画布</h2></div>
+            <div id="canvas-editor-actions" class="canvas-editor-actions" hidden><button class="page-tool" type="button" data-editor-mode="restore">还原页面</button><button class="page-tool danger" type="button" data-editor-mode="remove">删除页面</button></div>
+          </div>
+          <div class="canvas-shell"><iframe id="canvas-frame" title="交互画布预览"></iframe></div>
+          <aside id="editor-panel" class="editor-panel" hidden aria-labelledby="editor-panel-title">
+            <div class="editor-panel-head"><div><h3 id="editor-panel-title">页面配置</h3><p id="editor-panel-note">仅调整当前项目的调用页面，不影响模板库。</p></div><button id="editor-close" class="editor-close" type="button" aria-label="关闭页面配置">×</button></div>
+            <div id="editor-page-list" class="editor-page-list"></div>
+            <div class="editor-panel-foot"><span id="editor-count" class="editor-count">当前项目 0 个页面</span><button id="editor-apply" class="editor-apply" type="button">确认</button></div>
+          </aside>
+        </section>
+      </main>
+    </div>
+    <iframe id="module-source" class="module-source" src="../ux-board/ux-board.html" title="模块库数据源" tabindex="-1" aria-hidden="true"></iframe>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script>
+      const roleSwitch = document.querySelector('.side-role');
+      const newProject = document.getElementById('new-project');
+      const editButtons = [...document.querySelectorAll('.edit-button')];
+      const toast = document.getElementById('toast');
+      const dashboard = document.getElementById('dashboard');
+      const canvasStage = document.getElementById('canvas-stage');
+      const canvasFrame = document.getElementById('canvas-frame');
+      const canvasTitle = document.getElementById('canvas-title');
+      const canvasEditorActions = document.getElementById('canvas-editor-actions');
+      const editorPanel = document.getElementById('editor-panel');
+      const editorTitle = document.getElementById('editor-panel-title');
+      const editorNote = document.getElementById('editor-panel-note');
+      const editorPageList = document.getElementById('editor-page-list');
+      const editorCount = document.getElementById('editor-count');
+      const editorApply = document.getElementById('editor-apply');
+      const activityList = document.getElementById('activity-list');
+      const moduleGrid = document.getElementById('module-grid');
+      const moduleSource = document.getElementById('module-source');
+      const isLocalWorkbench = window.location.protocol === 'file:';
+      const activityStorageKey = 'interaction-workbench-activities-v1';
+      const defaultActivities = [
+        { text:'已更新「披哥综艺互动」交互与页面配置', time:'2026-07-30 11:16' },
+        { text:'已发布「披哥综艺互动」', time:'2025-05-20 14:30' }
+      ];
+      const moduleDefinitions = [
+        { id:'lottery', name:'抽奖', icon:'✦', fallback:9 },
+        { id:'tasks', name:'任务', icon:'☷', fallback:8 },
+        { id:'my', name:'我的奖品', icon:'♧', fallback:4 },
+        { id:'usage', name:'权益使用', icon:'◇', fallback:6 },
+        { id:'orders', name:'我的订单', icon:'▤', fallback:3 },
+        { id:'transactions', name:'收支明细', icon:'¥', fallback:2 },
+        { id:'other', name:'活动规则', icon:'≡', fallback:1 }
+      ];
+      let projectActivities = readActivities();
+      const templatePages = [
+        { id:'coupon', module:'抽奖', name:'抽中优惠券', tabs:[['reduce','满减券'],['discount','折扣券'],['single','单品券'],['good','单品好物'],['multi','多券']] },
+        { id:'free-card', module:'抽奖', name:'抽中免单卡', tabs:[['category','品类免单卡'],['brand','品牌免单卡'],['star','明星免单卡']] }, { id:'bean', module:'抽奖', name:'抽中京豆' },
+        { id:'task-sheet', module:'任务', name:'任务半浮层' }, { id:'task-share', module:'任务', name:'主态 / 分享半浮层' }, { id:'task-login', module:'任务', name:'未登录' },
+        { id:'my-prize-sheet', module:'我的奖品', name:'奖品半浮层', tabs:[['cash','免单现金'],['more','更多奖品']] }, { id:'my-prize-empty', module:'我的奖品', name:'奖品空态' },
+        { id:'usage-demo', module:'权益使用', name:'主链路交互演示' }, { id:'usage-poster', module:'权益使用', name:'提现健康金成功' },
+        { id:'order-sheet', module:'我的订单', name:'订单半浮层', tabs:[['eligible','可参与免单订单'],['waived','已免单订单']] }, { id:'transaction-sheet', module:'收支明细', name:'收支半浮层', tabs:[['all','全部'],['income','收入'],['expense','支出']] }
+      ];
+      let projectPageIds = new Set(['coupon:reduce', 'coupon:discount', 'coupon:single', 'coupon:good', 'coupon:multi', 'task-sheet', 'my-prize-sheet:cash', 'usage-demo']);
+      let currentRole = 'visitor';
+      let editorMode = 'restore';
+      let toastTimer;
+
+      function readActivities() {
+        try {
+          const stored = JSON.parse(localStorage.getItem(activityStorageKey));
+          if (!Array.isArray(stored) || !stored.length) return [...defaultActivities];
+          const missingDefaults = defaultActivities.filter((item) => !stored.some((record) => record.text === item.text));
+          return [...stored, ...missingDefaults].sort((a, b) => b.time.localeCompare(a.time));
+        } catch (error) {
+          return [...defaultActivities];
+        }
+      }
+
+      function formatActivityTime(date = new Date()) {
+        const parts = new Intl.DateTimeFormat('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false }).formatToParts(date).reduce((result, part) => ({ ...result, [part.type]:part.value }), {});
+        return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}`;
+      }
+
+      function renderActivities() {
+        activityList.innerHTML = projectActivities.slice(0, 4).map((item) => `<div class="activity"><span class="activity-dot" aria-hidden="true"></span><span class="activity-copy">${item.text}<small>${item.time}</small></span><button class="more canvas-trigger" type="button" data-canvas="../project/ux-pgzy.html" data-canvas-title="披哥综艺互动">查看项目</button></div>`).join('');
+      }
+
+      function recordActivity(text) {
+        projectActivities = [{ text, time:formatActivityTime() }, ...projectActivities];
+        try { localStorage.setItem(activityStorageKey, JSON.stringify(projectActivities)); } catch (error) { /* Private browsing still keeps the current session list. */ }
+        renderActivities();
+      }
+
+      function countPagesInModule(module) {
+        return [...module.querySelectorAll('.template-page')].reduce((total, page) => {
+          const tabCount = page.querySelectorAll('[role="tablist"] [role="tab"]').length;
+          return total + (tabCount || 1);
+        }, 0);
+      }
+
+      function renderModuleLibrary(counts = {}) {
+        const modules = moduleDefinitions.map((module) => ({ ...module, count:counts[module.id] ?? module.fallback })).filter((module) => module.count > 0);
+        moduleGrid.innerHTML = modules.map((module) => `<article class="module-item"><span class="module-icon" aria-hidden="true">${module.icon}</span><span class="module-copy"><b>${module.name}</b><span>${module.count} 个页面</span></span></article>`).join('');
+      }
+
+      function syncModuleLibrary() {
+        try {
+          const sourceDocument = moduleSource.contentDocument;
+          if (!sourceDocument?.body) return;
+          const counts = Object.fromEntries(moduleDefinitions.map((module) => {
+            const sourceModule = sourceDocument.querySelector(`[data-node="${module.id}"]`);
+            return [module.id, sourceModule ? countPagesInModule(sourceModule) : 0];
+          }));
+          renderModuleLibrary(counts);
+        } catch (error) {
+          renderModuleLibrary();
+        }
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+
+      function setRole(role) {
+        const isAdmin = role === 'admin';
+        currentRole = role;
+        newProject.disabled = !isAdmin;
+        newProject.classList.toggle('is-active', isAdmin);
+        editButtons.forEach((button) => { button.disabled = !isAdmin; });
+        roleSwitch.querySelectorAll('[data-role]').forEach((option) => option.classList.toggle('active', option.dataset.role === role));
+        if (!isAdmin) { canvasEditorActions.hidden = true; editorPanel.hidden = true; }
+        showToast(isAdmin ? '已切换为管理身份，可新建和编辑项目。' : '已切换为游客身份，仅可查看已发布项目。');
+      }
+
+      if (!isLocalWorkbench) roleSwitch.hidden = true;
+      roleSwitch.querySelectorAll('[data-role]').forEach((option) => option.addEventListener('click', () => {
+        if (!isLocalWorkbench) return;
+        setRole(option.dataset.role);
+      }));
+      newProject.addEventListener('click', () => showToast('新建项目入口已准备好，可在此接入项目创建流程。'));
+      renderActivities();
+      renderModuleLibrary();
+      moduleSource.addEventListener('load', syncModuleLibrary);
+      activityList.addEventListener('click', (event) => {
+        const button = event.target.closest('.canvas-trigger');
+        if (button) openCanvasTrigger(button);
+      });
+      editButtons.forEach((button) => button.addEventListener('click', () => showCanvas(button.dataset.canvas, button.dataset.canvasTitle, button.dataset.canvasMode)));
+      function showCanvas(source, title, mode = 'view') {
+        canvasTitle.textContent = title;
+        canvasFrame.src = source;
+        dashboard.hidden = true;
+        canvasStage.hidden = false;
+        canvasEditorActions.hidden = mode !== 'edit';
+        editorPanel.hidden = true;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      function openCanvasTrigger(button) {
+        if (button.dataset.adminRequired === 'true' && currentRole !== 'admin') {
+          showToast('请切换管理模式');
+          return;
+        }
+        showCanvas(button.dataset.canvas, button.dataset.canvasTitle);
+      }
+      document.querySelectorAll('.canvas-trigger').forEach((button) => button.addEventListener('click', () => openCanvasTrigger(button)));
+      document.getElementById('back-dashboard').addEventListener('click', () => {
+        canvasFrame.removeAttribute('src');
+        canvasStage.hidden = true;
+        editorPanel.hidden = true;
+        dashboard.hidden = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      document.querySelectorAll('.side-nav a').forEach((link) => link.addEventListener('click', () => {
+        if (!canvasStage.hidden) { canvasFrame.removeAttribute('src'); canvasStage.hidden = true; editorPanel.hidden = true; dashboard.hidden = false; }
+        document.querySelectorAll('.side-nav a').forEach((item) => item.classList.toggle('active', item === link));
+      }));
+      function renderEditor() {
+        const isRestore = editorMode === 'restore';
+        const choiceGroups = templatePages.map((page) => ({
+          ...page,
+          choices: page.tabs ? page.tabs.map(([tabId, tabName]) => ({ id:`${page.id}:${tabId}`, name:tabName, tab:true })) : [{ id:page.id, name:page.name, tab:false }]
+        })).map((page) => ({ ...page, choices:page.choices.filter((choice) => isRestore ? !projectPageIds.has(choice.id) : projectPageIds.has(choice.id)) })).filter((page) => page.choices.length);
+        editorTitle.textContent = isRestore ? '还原页面' : '删除页面';
+        editorNote.textContent = isRestore ? '可单独选择带二级 Tab 的页面状态，加入当前项目。' : '可单独移除二级 Tab 页面，不影响冻结模板库。';
+        editorCount.textContent = `当前项目 ${projectPageIds.size} 个页面`;
+        editorApply.textContent = isRestore ? '加入所选页面' : '移除所选页面';
+        editorPageList.innerHTML = choiceGroups.length ? choiceGroups.map((page) => page.tabs ? `<section class="editor-group"><div class="editor-group-head"><span>${page.name}</span><small>${page.module} · 二级 Tab</small></div><div class="editor-tab-list">${page.choices.map((choice) => `<label class="editor-page"><input type="checkbox" value="${choice.id}"><span class="editor-page-copy"><b>${choice.name}</b><small>${page.name}</small></span></label>`).join('')}</div></section>` : `<label class="editor-page"><input type="checkbox" value="${page.choices[0].id}"><span class="editor-page-copy"><b>${page.name}</b><small>${page.module}</small></span></label>`).join('') : `<p class="editor-empty">${isRestore ? '模块库页面已全部加入当前项目' : '当前项目暂无可删除页面'}</p>`;
+      }
+      function openEditor(mode) { editorMode = mode; renderEditor(); editorPanel.hidden = false; }
+      document.querySelectorAll('[data-editor-mode]').forEach((button) => button.addEventListener('click', () => openEditor(button.dataset.editorMode)));
+      document.getElementById('editor-close').addEventListener('click', () => { editorPanel.hidden = true; });
+      editorApply.addEventListener('click', () => {
+        const selected = [...editorPageList.querySelectorAll('input:checked')].map((input) => input.value);
+        if (!selected.length) { showToast('请先选择页面。'); return; }
+        selected.forEach((id) => editorMode === 'restore' ? projectPageIds.add(id) : projectPageIds.delete(id));
+        renderEditor();
+        recordActivity(editorMode === 'restore' ? `已更新「披哥综艺互动」页面配置，新增 ${selected.length} 个页面` : `已更新「披哥综艺互动」页面配置，移除 ${selected.length} 个页面`);
+        showToast(editorMode === 'restore' ? `已加入 ${selected.length} 个页面到当前项目。` : `已从当前项目移除 ${selected.length} 个页面。`);
+      });
+    </script>
+  </body>
+</html>
