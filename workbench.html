@@ -62,7 +62,7 @@
               <table class="project-table">
                 <thead><tr><th>项目名称</th><th>状态</th><th>发布时间</th><th>来源</th><th>操作</th></tr></thead>
                 <tbody>
-                  <tr><td><div class="project-name">披哥综艺互动</div></td><td><span class="status">已发布</span></td><td>2025-05-20 14:30</td><td>官方模板</td><td><div class="actions"><button class="view-button canvas-trigger" type="button" data-canvas="../project/ux-pgzy.html" data-canvas-title="披哥综艺互动">查看项目</button><button class="edit-button" type="button" disabled data-canvas="../project/ux-pgzy.html" data-canvas-title="编辑：披哥综艺互动" data-canvas-mode="edit">⌑ 编辑项目</button></div></td></tr>
+                  <tr><td><div class="project-name">披哥综艺互动</div></td><td><span class="status">已发布</span></td><td>2025-05-20 14:30</td><td>官方模板</td><td><div class="actions"><button class="view-button canvas-trigger" type="button" data-canvas="./project/ux-pgzy.html" data-canvas-title="披哥综艺互动">查看项目</button><button class="edit-button" type="button" disabled data-canvas="./project/ux-pgzy.html" data-canvas-title="编辑：披哥综艺互动" data-canvas-mode="edit">⌑ 编辑项目</button></div></td></tr>
                 </tbody>
               </table>
             </section>
@@ -73,7 +73,7 @@
             <section id="module-library" class="card module-library" aria-labelledby="module-library-title">
               <div class="module-library-head">
                 <h2 id="module-library-title" class="section-title">交互模块库</h2>
-                <button class="canvas-link canvas-trigger" type="button" data-admin-required="true" data-canvas="../ux-board/ux-board.html" data-canvas-title="交互模板库大画布">打开模板库</button>
+                <button class="canvas-link canvas-trigger" type="button" data-admin-required="true" data-canvas="./ux-board/ux-board.html" data-canvas-title="交互模板库大画布">打开模板库</button>
               </div>
               <div id="module-grid" class="module-grid" aria-label="模板库模块与页面数量" aria-live="polite"></div>
             </section>
@@ -93,7 +93,7 @@
         </section>
       </main>
     </div>
-    <iframe id="module-source" class="module-source" src="../ux-board/ux-board.html" title="模块库数据源" tabindex="-1" aria-hidden="true"></iframe>
+    <iframe id="module-source" class="module-source" src="./ux-board/ux-board.html" title="模块库数据源" tabindex="-1" aria-hidden="true"></iframe>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script>
       const roleSwitch = document.querySelector('.side-role');
@@ -160,7 +160,7 @@
       }
 
       function renderActivities() {
-        activityList.innerHTML = projectActivities.slice(0, 4).map((item) => `<div class="activity"><span class="activity-dot" aria-hidden="true"></span><span class="activity-copy">${item.text}<small>${item.time}</small></span><button class="more canvas-trigger" type="button" data-canvas="../project/ux-pgzy.html" data-canvas-title="披哥综艺互动">查看项目</button></div>`).join('');
+        activityList.innerHTML = projectActivities.slice(0, 4).map((item) => `<div class="activity"><span class="activity-dot" aria-hidden="true"></span><span class="activity-copy">${item.text}<small>${item.time}</small></span><button class="more canvas-trigger" type="button" data-canvas="./project/ux-pgzy.html" data-canvas-title="披哥综艺互动">查看项目</button></div>`).join('');
       }
 
       function recordActivity(text) {
